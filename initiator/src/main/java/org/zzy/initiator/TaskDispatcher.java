@@ -5,6 +5,7 @@ import android.os.Looper;
 import android.support.annotation.UiThread;
 
 import org.zzy.initiator.task.Task;
+import org.zzy.initiator.task.TaskCallBack;
 import org.zzy.initiator.task.TaskRunnable;
 import org.zzy.initiator.utils.LogUtils;
 import org.zzy.initiator.utils.Utils;
@@ -14,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -84,6 +86,16 @@ public class TaskDispatcher {
 
     private CountDownLatch mCountDownLatch;
 
+    /**
+     * 等待超时时间
+     */
+    private int mWaitTimeOut = 1;
+
+    /**
+     * 等超时时间单位
+     */
+    private TimeUnit mUnit = TimeUnit.MINUTES;
+
     private TaskDispatcher(){
     }
 
@@ -111,6 +123,15 @@ public class TaskDispatcher {
             mContext = context;
             mIsMainProcess = Utils.isMainProcess(context);
         }
+    }
+
+    /**
+     * 设置等待超时时间
+     */
+    public TaskDispatcher setWaitOutTime(int timeOut,TimeUnit unit){
+        mWaitTimeOut = timeOut;
+        mUnit = unit;
+        return this;
     }
 
     /**
@@ -169,7 +190,9 @@ public class TaskDispatcher {
             mAllTasks = TaskSortUtil.getSortResult(mAllTasks,mClazzAllTask);
             mCountDownLatch = new CountDownLatch(mNeedWaitCount.get());
 
-            //运行在工作线程中要执行的任务
+            //运行在工作线程中要执行的任务,必须在执行主线程Task之前运行，
+            //因为异步任务只需要发送给线程池，而如果先执行主线程的Task,那么
+            //异步任务就需要一直等待
             executeTaskOnWorkThread();
             //运行在主线程中要执行的任务
             executeTaskOnMainThread();
@@ -194,6 +217,28 @@ public class TaskDispatcher {
         if(!task.runOnMainThread()){
             Future future = task.runOn().submit(new TaskRunnable(task,this));
             mWorkThreadTask.add(future);
+        }else{
+            mMainThreadTask.add(task);
+        }
+    }
+
+    private void executeTaskOnMainThread(){
+        mStartTime = System.currentTimeMillis();
+        for(Task task : mMainThreadTask){
+            long time = System.currentTimeMillis();
+            new TaskRunnable(task,this).run();
+            LogUtils.i(task.getClass().getSimpleName() + " cost "+(System.currentTimeMillis()-time));
+        }
+        LogUtils.i("Main Thread Task cost:"+(System.currentTimeMillis()-mStartTime));
+    }
+
+    private void await(){
+        try {
+            if (mNeedWaitCount.get() > 0) {
+                mCountDownLatch.await(mWaitTimeOut, mUnit);
+            }
+        }catch (InterruptedException e){
+            e.printStackTrace();
         }
     }
 
