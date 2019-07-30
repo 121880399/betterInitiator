@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Looper;
 import android.support.annotation.UiThread;
 
+import org.zzy.initiator.sort.TaskSortUtil;
 import org.zzy.initiator.task.Task;
 import org.zzy.initiator.task.TaskCallBack;
 import org.zzy.initiator.task.TaskRunnable;
@@ -213,6 +214,16 @@ public class TaskDispatcher {
         }
     }
 
+    /**
+     *  将任务标记成完成
+     */
+    public void markTaskDone(Task task){
+            mFinishedTasks.add(task.getClass());
+            mNeedWaitTasks.remove(task);
+            mCountDownLatch.countDown();
+            mNeedWaitCount.getAndDecrement();
+    }
+
     private void sendTask(Task task){
         if(!task.runOnMainThread()){
             Future future = task.runOn().submit(new TaskRunnable(task,this));
@@ -255,6 +266,22 @@ public class TaskDispatcher {
                 }
             }
         }
+    }
+
+    /**
+     * 通知后面的任务，前一个任务已经完成
+     */
+    public void notifyChildren(Task task){
+        ArrayList<Task> tasks = mDependedHashMap.get(task.getClass());
+        if(tasks !=null && tasks.size()>0){
+            for (Task perTask:tasks) {
+                perTask.countDown();
+            }
+        }
+    }
+
+    public boolean isMainProcess(){
+        return mIsMainProcess;
     }
 
 }
