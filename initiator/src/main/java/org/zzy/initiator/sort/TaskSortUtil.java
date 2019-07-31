@@ -60,7 +60,7 @@ public class TaskSortUtil {
                 newTaskWithOutDepend.add(task);
             }
         }
-        //顺序:依赖的--->没有依赖的
+        //顺序:被依赖的--->没有依赖的
         newTasksALL.addAll(newTaskDepended);
         newTasksALL.addAll(newTaskWithOutDepend);
         return newTasksALL;

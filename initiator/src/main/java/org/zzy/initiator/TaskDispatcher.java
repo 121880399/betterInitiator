@@ -185,7 +185,6 @@ public class TaskDispatcher {
             throw new RuntimeException("must be called form UiThread");
         }
         if(mAllTasks.size() > 0 ){
-            // zzyToDo: 2019/7/29 考虑放到子线程中去打印
             printDependedMsg();
             //对Task进行排序
             mAllTasks = TaskSortUtil.getSortResult(mAllTasks,mClazzAllTask);
@@ -254,11 +253,19 @@ public class TaskDispatcher {
     }
 
     /**
+     * 是否打开调试模式
+     */
+    public TaskDispatcher setDebug(boolean isDebug){
+        LogUtils.setDebug(isDebug);
+        return this;
+    }
+
+    /**
      * 查看被依赖的信息
      */
     private void printDependedMsg() {
         LogUtils.i("needWait size : " + (mNeedWaitCount.get()));
-        if (false) {
+        if (LogUtils.isDebug()) {
             for (Class<? extends Task> cls : mDependedHashMap.keySet()) {
                 LogUtils.i("cls " + cls.getSimpleName() + "   " + mDependedHashMap.get(cls).size());
                 for (Task task : mDependedHashMap.get(cls)) {
