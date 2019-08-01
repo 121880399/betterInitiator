@@ -44,7 +44,7 @@ public class TaskDispatcher {
     private Context mContext;
 
     /**
-     * 是否是主线程
+     * 是否是主进程
      */
     private volatile  boolean mIsMainProcess;
 
@@ -118,12 +118,13 @@ public class TaskDispatcher {
      * 初始化启动器
      * @param context 这里的context记得传Application中的，否则会引起内存泄漏
      */
-    public void init(Context context){
+    public TaskDispatcher init(Context context){
         if(context != null){
             mHasInit = true;
             mContext = context;
             mIsMainProcess = Utils.isMainProcess(context);
         }
+        return this;
     }
 
     /**
@@ -152,6 +153,13 @@ public class TaskDispatcher {
         return this;
     }
 
+    /**
+     * 取消所有未完成的任务
+     */
+    public void cancelAll(){
+
+    }
+
     private void collectDepends(Task task){
         if(mDependedHashMap == null){
             LogUtils.i("DependedHashMap is empty!");
@@ -163,10 +171,6 @@ public class TaskDispatcher {
                     mDependedHashMap.put(clazz,new ArrayList<Task>());
                 }
                 mDependedHashMap.get(clazz).add(task);
-                // zzyToDo: 2019/7/29 这段逻辑需要确认
-                if(mFinishedTasks.contains(clazz)){
-                    task.countDown();
-                }
             }
         }
     }
@@ -218,9 +222,11 @@ public class TaskDispatcher {
      */
     public void markTaskDone(Task task){
             mFinishedTasks.add(task.getClass());
-            mNeedWaitTasks.remove(task);
-            mCountDownLatch.countDown();
-            mNeedWaitCount.getAndDecrement();
+            if(task.needWait()){
+                mCountDownLatch.countDown();
+                mNeedWaitTasks.remove(task);
+                mNeedWaitCount.getAndDecrement();
+            }
     }
 
     private void sendTask(Task task){

@@ -36,7 +36,7 @@ public interface ITask {
     void run();
 
     @ThreadPoolType
-    int getThreadPoolType();
+    int threadPoolType();
 
     /**
      * 执行Task

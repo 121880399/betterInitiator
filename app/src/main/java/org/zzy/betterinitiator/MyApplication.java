@@ -28,6 +28,5 @@ public class MyApplication extends Application {
                 .addTask(new ETask())
                 .addTask(new FTask())
                 .start();
-
     }
 }

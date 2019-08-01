@@ -1,15 +1,12 @@
 package org.zzy.initiator.task;
 
-import android.os.CountDownTimer;
 import android.os.Process;
 
 import org.zzy.initiator.utils.DispatcherExecutor;
 
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -77,13 +74,13 @@ public abstract class Task  implements ITask{
      * 默认使用IO
      */
     @Override
-    public int getThreadPoolType() {
+    public int threadPoolType() {
         return ITask.IO;
     }
 
     @Override
     public ExecutorService runOn() {
-        switch (getThreadPoolType()){
+        switch (threadPoolType()){
             case ITask.CPU:
                 return DispatcherExecutor.getCPUExecutor();
             case ITask.IO:
@@ -109,7 +106,7 @@ public abstract class Task  implements ITask{
 
     @Override
     public boolean runOnMainThread() {
-        return false;
+        return true;
     }
 
     @Override

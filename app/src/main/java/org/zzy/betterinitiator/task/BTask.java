@@ -2,6 +2,8 @@ package org.zzy.betterinitiator.task;
 
 import android.os.SystemClock;
 
+import org.greenrobot.eventbus.EventBus;
+import org.zzy.betterinitiator.event.InitEvent;
 import org.zzy.initiator.task.Task;
 import org.zzy.initiator.utils.LogUtils;
 
@@ -19,6 +21,7 @@ public class BTask extends Task {
     public void run() {
         LogUtils.i("BTask is running");
         SystemClock.sleep(1000);
+        EventBus.getDefault().postSticky(new InitEvent("BTask result data"));
     }
 
     @Override
