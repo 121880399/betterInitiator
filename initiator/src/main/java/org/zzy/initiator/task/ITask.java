@@ -39,7 +39,7 @@ public interface ITask {
     int threadPoolType();
 
     /**
-     * 执行Task
+     * 在线程池中执行Task，如果设置了runOnMainThread为true，则不会调用该方法
      */
     ExecutorService runOn();
 

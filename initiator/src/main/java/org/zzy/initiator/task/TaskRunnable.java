@@ -34,16 +34,24 @@ public class TaskRunnable implements Runnable {
         Process.setThreadPriority(mTask.priority());
 
         long startTime = System.currentTimeMillis();
-
-        mTask.setWaiting(true);
-        //1分钟超时
-        mTask.await(1, TimeUnit.MINUTES);
-        //得到等待时长
-        long waitTime = System.currentTimeMillis() - startTime;
+        long waitTime=0;
+        if(mTask.dependsOn() != null){
+            mTask.setWaiting(true);
+            //1分钟超时
+            mTask.await(1, TimeUnit.MINUTES);
+            //得到等待时长
+            waitTime = System.currentTimeMillis() - startTime;
+        }
+        if(mTask.isFinished()){
+            return;
+        }
         startTime = System.currentTimeMillis();
         //开始执行任务
         mTask.setRunning(true);
         mTask.run();
+        if(mTask.isFinished()){
+            return;
+        }
         //执行尾部任务
         Runnable tailRunnable = mTask.getTailRunnable();
         if(tailRunnable != null ){

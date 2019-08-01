@@ -3,6 +3,7 @@ package org.zzy.initiator.task;
 import android.os.Process;
 
 import org.zzy.initiator.utils.DispatcherExecutor;
+import org.zzy.initiator.utils.LogUtils;
 
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -43,6 +44,7 @@ public abstract class Task  implements ITask{
         }
     }
 
+
     /**
      * 带有超时，推荐使用
      * @param timeOut 超时时间
@@ -50,11 +52,17 @@ public abstract class Task  implements ITask{
      */
     public void await(int timeOut,TimeUnit unit){
         try {
+            LogUtils.i("Await:"+this.getClass().getSimpleName());
             //1分钟超时
             mDepends.await(timeOut, unit);
         }catch (InterruptedException e){
+            LogUtils.i("Await exception:"+this.getClass().getSimpleName());
             e.printStackTrace();
         }
+    }
+
+    public void cancel(){
+        mIsFinished = true;
     }
 
     /**

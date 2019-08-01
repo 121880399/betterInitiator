@@ -6,14 +6,16 @@ import android.support.annotation.UiThread;
 
 import org.zzy.initiator.sort.TaskSortUtil;
 import org.zzy.initiator.task.Task;
-import org.zzy.initiator.task.TaskCallBack;
 import org.zzy.initiator.task.TaskRunnable;
 import org.zzy.initiator.utils.LogUtils;
 import org.zzy.initiator.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -56,7 +58,7 @@ public class TaskDispatcher {
     private List<Class<? extends Task>> mClazzAllTask = new ArrayList<>();
 
     /**
-     * 需要等待的Task
+     * 需要等待的Task,这里面的Task需要执行完毕以后，主线程才能接着执行
      */
     private List<Task> mNeedWaitTasks = new ArrayList<>();
 
@@ -71,14 +73,15 @@ public class TaskDispatcher {
     private AtomicInteger mNeedWaitCount = new AtomicInteger();
 
     /**
-     * 线程中执行的Task
+     * 主线程中执行的Task
      */
     private volatile List<Task> mMainThreadTask = new ArrayList<>();
 
     /**
-     * 工作线程执行的Task
+     * 工作线程执行的Task和返回
      */
-    private List<Future> mWorkThreadTask = new ArrayList<>();
+    private Map<Task,Future> mWorkThreadTask = new LinkedHashMap<>(8);
+
 
     /**
      * 依赖任务，key为被依赖的Task，value为依赖该Task的所有任务List
@@ -96,6 +99,11 @@ public class TaskDispatcher {
      * 等超时时间单位
      */
     private TimeUnit mUnit = TimeUnit.MINUTES;
+
+    /**
+     * 是否取消
+     */
+    private volatile boolean isCancel;
 
     private TaskDispatcher(){
     }
@@ -157,7 +165,19 @@ public class TaskDispatcher {
      * 取消所有未完成的任务
      */
     public void cancelAll(){
-
+        //取消掉主线程中执行的任务
+        isCancel = true;
+        //取消掉工作线程中的任务
+        //为了保证按顺序遍历，使用了LinkedHashMap而没有使用HashMap
+        for(Entry<Task, Future> entry: mWorkThreadTask.entrySet()){
+            Task key = entry.getKey();
+            Future value = entry.getValue();
+            if(!value.isDone()) {
+                key.cancel();
+                //取消未开始的任务和中断正在运行的任务
+                boolean cancel = value.cancel(true);
+            }
+        }
     }
 
     private void collectDepends(Task task){
@@ -232,7 +252,7 @@ public class TaskDispatcher {
     private void sendTask(Task task){
         if(!task.runOnMainThread()){
             Future future = task.runOn().submit(new TaskRunnable(task,this));
-            mWorkThreadTask.add(future);
+            mWorkThreadTask.put(task,future);
         }else{
             mMainThreadTask.add(task);
         }
@@ -241,6 +261,9 @@ public class TaskDispatcher {
     private void executeTaskOnMainThread(){
         mStartTime = System.currentTimeMillis();
         for(Task task : mMainThreadTask){
+            if(isCancel){
+                return;
+            }
             long time = System.currentTimeMillis();
             new TaskRunnable(task,this).run();
             LogUtils.i(task.getClass().getSimpleName() + " cost "+(System.currentTimeMillis()-time));

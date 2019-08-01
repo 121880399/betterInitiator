@@ -38,7 +38,7 @@ public class ETask extends Task {
         if(!TextUtils.isEmpty(data)) {
             LogUtils.i("input data:" + data);
         }
-        SystemClock.sleep(2000);
+        SystemClock.sleep(1000);
     }
 
     @Override
