@@ -79,6 +79,7 @@ public class Graph {
             count++;
         }
         //如果取出的节点数量不等于所有节点数量，说明存在环
+        //原因是，有环的情况下，环内各节点的入度不能消减为0，所以count值只能环外的节点个数
         if(count != mVerticeCount){
             throw new IllegalStateException("Exists a cycle in the graph");
         }
