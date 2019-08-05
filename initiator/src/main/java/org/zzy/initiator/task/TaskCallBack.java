@@ -6,5 +6,5 @@ package org.zzy.initiator.task;
  * @创建日期 2019/7/29
  */
 public interface TaskCallBack<T> {
-    void result(T data);
+    void result(T... data);
 }

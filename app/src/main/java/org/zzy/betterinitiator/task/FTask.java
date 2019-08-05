@@ -25,7 +25,7 @@ public class FTask extends Task {
         LogUtils.i("FTask is running");
         SystemClock.sleep(1000);
         if(mTaskCallBack!=null){
-            mTaskCallBack.result("success");
+            mTaskCallBack.result("success","abc");
         }
     }
 

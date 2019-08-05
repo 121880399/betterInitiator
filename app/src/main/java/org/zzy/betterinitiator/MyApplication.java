@@ -26,11 +26,11 @@ public class MyApplication extends Application {
         TaskDispatcher taskDispatcher = TaskDispatcher.getInstance();
         //这里面模拟某个Task中初始化完成以后，需要有返回值给Application持有
         TaskCallBack<String> FTaskCallback =new TaskCallBack<String>() {
-
             @Override
-            public void result(String data) {
-                str = data;
-                LogUtils.i(str);
+            public void result(String... data) {
+                str = data[0];
+                String test = data[1];
+                LogUtils.i(str+":"+test);
             }
         };
         taskDispatcher.init(this)
