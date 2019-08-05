@@ -39,6 +39,7 @@ public class ETask extends Task {
             LogUtils.i("input data:" + data);
         }
         SystemClock.sleep(1000);
+        EventBus.getDefault().unregister(this);
     }
 
     @Override
