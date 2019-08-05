@@ -204,6 +204,10 @@ public class TaskDispatcher {
 
     @UiThread
     public void start(){
+        if(!mHasInit){
+            throw new RuntimeException("must call init first");
+        }
+
         mStartTime = System.currentTimeMillis();
         if(Looper.getMainLooper() != Looper.myLooper()){
             throw new RuntimeException("must be called form UiThread");
