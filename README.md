@@ -29,3 +29,7 @@ dependencies {
 # 详细原理
 
 # About me
+就职于:首汽约车
+职位:android高级工程师
+Email:zhouzhengyi007@126.com
+简书:http://www.jianshu.com/u/ff764c6c19e4
