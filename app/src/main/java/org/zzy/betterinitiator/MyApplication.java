@@ -23,7 +23,7 @@ public class MyApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        TaskDispatcher taskDispatcher = TaskDispatcher.getInstance();
+        TaskDispatcher taskDispatcher = new TaskDispatcher();
         //这里面模拟某个Task中初始化完成以后，需要有返回值给Application持有
         TaskCallBack<String> FTaskCallback =new TaskCallBack<String>() {
             @Override

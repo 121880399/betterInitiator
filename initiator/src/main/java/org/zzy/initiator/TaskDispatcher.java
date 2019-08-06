@@ -22,7 +22,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * 因为整个APP使用同一个Dispatcher，所以设计成单例
  * @作者 Zhouzhengyi
  * @创建日期 2019/7/28
  */
@@ -105,22 +104,6 @@ public class TaskDispatcher {
      */
     private volatile boolean isCancel;
 
-    private TaskDispatcher(){
-    }
-
-    /**
-     * 获取单例
-     */
-    public static TaskDispatcher getInstance(){
-        if(mInstance == null){
-            synchronized (TaskDispatcher.class){
-                if(mInstance == null){
-                    mInstance = new TaskDispatcher();
-                }
-            }
-        }
-        return mInstance;
-    }
 
     /**
      * 初始化启动器

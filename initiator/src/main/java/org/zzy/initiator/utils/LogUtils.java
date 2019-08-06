@@ -11,7 +11,7 @@ public class LogUtils {
 
     public static void i(String msg){
         if(mDebug){
-            Log.i("initiator",msg);
+            Log.i("task",msg);
         }
     }
 
