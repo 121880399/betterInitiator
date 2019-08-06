@@ -7,11 +7,11 @@ import android.util.Log;
  * @创建日期 2019/7/29
  */
 public class LogUtils {
-    private static boolean mDebug = true;
+    private static boolean mDebug = false;
 
     public static void i(String msg){
         if(mDebug){
-            Log.i("task",msg);
+            Log.i("initiator",msg);
         }
     }
 
