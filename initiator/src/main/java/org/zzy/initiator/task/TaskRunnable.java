@@ -37,8 +37,8 @@ public class TaskRunnable implements Runnable {
         long waitTime=0;
         if(mTask.dependsOn() != null){
             mTask.setWaiting(true);
-            //1分钟超时
-            mTask.await(1, TimeUnit.MINUTES);
+            //3秒钟超时
+            mTask.await(3000, TimeUnit.MILLISECONDS);
             //得到等待时长
             waitTime = System.currentTimeMillis() - startTime;
         }
