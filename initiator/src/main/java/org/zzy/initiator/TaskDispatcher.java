@@ -92,12 +92,12 @@ public class TaskDispatcher {
     /**
      * 等待超时时间
      */
-    private int mWaitTimeOut = 1;
+    private int mWaitTimeOut = 3000;
 
     /**
      * 等超时时间单位
      */
-    private TimeUnit mUnit = TimeUnit.MINUTES;
+    private TimeUnit mUnit = TimeUnit.MILLISECONDS;
 
     /**
      * 是否取消
