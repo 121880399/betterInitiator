@@ -1,6 +1,7 @@
 package org.zzy.initiator.sort;
 
 import android.util.ArraySet;
+import android.util.Log;
 
 import org.zzy.initiator.task.Task;
 import org.zzy.initiator.utils.LogUtils;
@@ -40,6 +41,7 @@ public class TaskSortUtil {
                 graph.addEdge(indexOfDepend,i);
             }
         }
+        LogUtils.i(graph.toString());
         List<Integer> indexList = graph.topologicalSort();
         List<Task> newTasksAll = getResultTasks(originTasks,dependSet,indexList);
         LogUtils.i("task analyse cost makeTime " + (System.currentTimeMillis() - startTime));
@@ -48,21 +50,24 @@ public class TaskSortUtil {
 
     private static List<Task> getResultTasks(List<Task> originTask,Set<Integer> dependSet,List<Integer> indexList){
         List<Task> newTasksALL = new ArrayList<>(originTask.size());
-        //依赖
-        List<Task> newTaskDepended = new ArrayList<>();
-        //没有依赖
-        List<Task> newTaskWithOutDepend = new ArrayList<>();
-        for(int index : indexList){
-            if(dependSet.contains(index)){
-                newTaskDepended.add(originTask.get(index));
-            }else{
-                Task task = originTask.get(index);
-                newTaskWithOutDepend.add(task);
-            }
+//        //依赖
+//        List<Task> newTaskDepended = new ArrayList<>();
+//        //没有依赖
+//        List<Task> newTaskWithOutDepend = new ArrayList<>();
+//        for(int index : indexList){
+//            if(dependSet.contains(index)){
+//                newTaskDepended.add(originTask.get(index));
+//            }else{
+//                Task task = originTask.get(index);
+//                newTaskWithOutDepend.add(task);
+//            }
+//        }
+//        newTasksALL.addAll(newTaskWithOutDepend);
+//        //顺序:被依赖的--->没有依赖的
+//        newTasksALL.addAll(newTaskDepended);
+        for(int index:indexList){
+            newTasksALL.add(originTask.get(index));
         }
-        //顺序:被依赖的--->没有依赖的
-        newTasksALL.addAll(newTaskDepended);
-        newTasksALL.addAll(newTaskWithOutDepend);
         return newTasksALL;
     }
 

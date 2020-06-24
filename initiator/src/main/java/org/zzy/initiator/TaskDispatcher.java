@@ -192,11 +192,12 @@ public class TaskDispatcher {
         }
 
         mStartTime = System.currentTimeMillis();
+        LogUtils.i("Start task Time:"+mStartTime);
         if(Looper.getMainLooper() != Looper.myLooper()){
             throw new RuntimeException("must be called form UiThread");
         }
         if(mAllTasks.size() > 0 ){
-            printDependedMsg();
+            //printDependedMsg();
             //对Task进行排序
             mAllTasks = TaskSortUtil.getSortResult(mAllTasks,mClazzAllTask);
             mCountDownLatch = new CountDownLatch(mNeedWaitCount.get());

@@ -53,7 +53,6 @@ public abstract class Task  implements ITask{
     public void await(int timeOut,TimeUnit unit){
         try {
             LogUtils.i("Await:"+this.getClass().getSimpleName());
-            //1分钟超时
             mDepends.await(timeOut, unit);
         }catch (InterruptedException e){
             LogUtils.i("Await exception:"+this.getClass().getSimpleName());

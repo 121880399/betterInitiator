@@ -86,4 +86,18 @@ public class Graph {
         return order;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(System.getProperty("line.separator"));
+        for ( int i =0 ;i<mAdj.length;i++){
+            stringBuilder.append(i);
+            for (int node :mAdj[i]) {
+                stringBuilder.append("->");
+                stringBuilder.append(node);
+            }
+            stringBuilder.append(System.getProperty("line.separator"));
+        }
+        return stringBuilder.toString();
+    }
 }
